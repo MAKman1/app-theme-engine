@@ -172,6 +172,15 @@ public final class ATE extends ATEBase {
             throw new IllegalStateException("View has no Context, use apply(Context, View, String) instead.");
         apply(view.getContext(), view, key);
     }
+    
+    @NonNull
+    private static Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
+        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bmp);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bmp;
+    }
 
     @SuppressWarnings("unchecked")
     public static void apply(@NonNull Context context, @NonNull View view, @Nullable String key) {
@@ -256,7 +265,9 @@ public final class ATE extends ATEBase {
         color = Util.stripAlpha(color);
         // Default is app's launcher icon
         if (icon == null)
-            icon = ((BitmapDrawable) activity.getApplicationInfo().loadIcon(activity.getPackageManager())).getBitmap();
+            icon = getBitmapFromDrawable(activity.getApplicationInfo().loadIcon(activity.getPackageManager()));
+//         if (icon == null)
+//             icon = ((BitmapDrawable) activity.getApplicationInfo().loadIcon(activity.getPackageManager())).getBitmap();
 
         // Sets color of entry in the system recents page
         ActivityManager.TaskDescription td = new ActivityManager.TaskDescription(
